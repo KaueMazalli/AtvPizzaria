@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model usuario{
+  id String @id @default(uuid())
+  name String
+  email String
+  senha String
+  criado DateTime? @default(now())
+  modificado DateTime? @default(now())
+
+  @@map("Usuario")
+}
+
+model Categoria{
+  id String @id @default(uuid())
+  name String
+  criado DateTime? @default(now())
+  modificado DateTime? @default(now())
+
+  @@map("Categoria")
+  produtos Produto[]
+}
+
+model Produto{
+  id String @id @default(uuid())
+  name String
+  preco String
+  descricao String
+  banner String
+  criado DateTime? @default(now())
+  modificado DateTime? @default(now())
+
+  categoria Categoria @relation(fields: [idCategoria], references: [id])
+
+  @@map("Produtos")
+  idCategoria String
+  itens Item[]
+
+}
+
+model Pedido{
+  id String @id @default(uuid())
+  mesa Int
+  status Boolean @default(false)
+  rascunho Boolean @default(true)
+  name String?
+  criado DateTime? @default(now())
+  modificado DateTime? @default(now())
+
+  @@map("Pedidos")
+
+  itens Item[]
+}
+
+model Item{
+  id String @id @default(uuid())
+  quantidade Int
+
+  criado DateTime? @default(now())
+  modificado DateTime? @default(now())
+
+  produto Produto @relation(fields: [idProduto], references: [id])
+  pedido Pedido @relation(fields: [idPedido], references: [id])
+
+  @@map("Itens")
+  idProduto String
+  idPedido String
+}
